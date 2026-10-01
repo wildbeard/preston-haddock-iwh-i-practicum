@@ -21,6 +21,7 @@ if (!PRIVATE_APP_ACCESS || !CUSTOM_OBJ_ID) {
 const BASE_URL = `https://api.hubapi.com/crm/v3/objects/${CUSTOM_OBJ_ID}`;
 const BASE_HEADER = {
   Authorization: `Bearer ${PRIVATE_APP_ACCESS}`,
+  "Content-Type": "application/json",
 };
 
 // * Code for Route 1 goes here
@@ -33,7 +34,6 @@ app.get("/", async (_, res) => {
       {
         headers: {
           ...BASE_HEADER,
-          "Content-Type": "application/json",
         },
       },
     );
@@ -56,16 +56,13 @@ const viewOrEdit = async (req, res, state) => {
       {
         headers: {
           ...BASE_HEADER,
-          "Content-Type": "application/json",
         },
       },
     );
-    const car = r.data;
-    console.log(car);
 
     res.render("view", {
       title: `My ${car.properties.name}`,
-      car,
+      car: res.data,
       state,
       error: null,
     });
@@ -79,52 +76,52 @@ app.get("/view/:id", (req, res) => viewOrEdit(req, res, "view"));
 
 app.get("/update/:id", (req, res) => viewOrEdit(req, res, "edit"));
 
+app.get("/create", (_, res) => {
+  res.render("view", {
+    title: "Create Car",
+    car: {
+      id: null,
+      properties: {
+        name: "",
+        manufacturer: "",
+        model: "",
+        year: null,
+      },
+    },
+    state: "create",
+    error: null,
+  });
+});
+
 // * Code for Route 3 goes here
+const createOrUpdate = async (req, res) => {
+  const body = {
+    properties: {
+      name: req.body.name,
+      model: req.body.model,
+      manufacturer: req.body.manufacturer,
+      year: req.body.year,
+    },
+  };
+  const method = req.route.path === "/create" ? "post" : "patch";
+  const url =
+    method === "post" ? `${BASE_URL}` : `${BASE_URL}/${req.params.id}`;
 
-/** 
-* * This is sample code to give you a reference for how you should structure your calls. 
+  try {
+    await axios[method](url, body, {
+      headers: {
+        ...BASE_HEADER,
+      },
+    });
+  } catch (e) {
+    console.error(e);
+  }
 
-* * App.get sample
-app.get('/contacts', async (req, res) => {
-    const contacts = 'https://api.hubspot.com/crm/v3/objects/contacts';
-    const headers = {
-        Authorization: `Bearer ${PRIVATE_APP_ACCESS}`,
-        'Content-Type': 'application/json'
-    }
-    try {
-        const resp = await axios.get(contacts, { headers });
-        const data = resp.data.results;
-        res.render('contacts', { title: 'Contacts | HubSpot APIs', data });      
-    } catch (error) {
-        console.error(error);
-    }
-});
+  res.redirect("/");
+};
 
-* * App.post sample
-app.post('/update', async (req, res) => {
-    const update = {
-        properties: {
-            "favorite_book": req.body.newVal
-        }
-    }
-
-    const email = req.query.email;
-    const updateContact = `https://api.hubapi.com/crm/v3/objects/contacts/${email}?idProperty=email`;
-    const headers = {
-        Authorization: `Bearer ${PRIVATE_APP_ACCESS}`,
-        'Content-Type': 'application/json'
-    };
-
-    try { 
-        await axios.patch(updateContact, update, { headers } );
-        res.redirect('back');
-    } catch(err) {
-        console.error(err);
-    }
-
-});
-*/
-
+app.post("/create", createOrUpdate);
+app.post("/update/:id", createOrUpdate);
 
 // * Localhost
-app.listen(3000, () => console.log('Listening on http://localhost:3000'));
+app.listen(3000, () => console.log("Listening on http://localhost:3000"));
