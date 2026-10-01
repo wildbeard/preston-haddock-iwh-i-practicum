@@ -1,0 +1,28 @@
+extends layout.pug
+
+block content
+  a(href="/update-cobj") Add to this table
+  h1 Your Cars
+
+  if error
+    p(style="color:red")=error
+  else
+    table.cars-table
+      thead
+        tr
+          th Name
+          th Model
+          th Manufacturer
+          th Year
+          th
+      tbody
+        each car in cars
+          tr
+            td=car.properties.name
+            td=car.properties.model
+            td=car.properties.manufacturer
+            td=car.properties.year
+            td
+              a(href=`/view/${car.id}`) View
+              = ' '
+              a(href=`/update/${car.id}`) Edit
