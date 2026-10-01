@@ -1,7 +1,6 @@
 require("dotenv").config();
 const express = require("express");
 const axios = require("axios");
-const e = require("express");
 const app = express();
 
 app.set("view engine", "pug");
@@ -23,52 +22,70 @@ const BASE_HEADER = {
   Authorization: `Bearer ${PRIVATE_APP_ACCESS}`,
   "Content-Type": "application/json",
 };
+const PROPERTIES = "name,model,manufacturer,year";
+
+const buildBody = (req) => ({
+  properties: {
+    name: req.body.name,
+    model: req.body.model,
+    manufacturer: req.body.manufacturer,
+    year: req.body.year,
+  },
+});
 
 // * Code for Route 1 goes here
 app.get("/", async (_, res) => {
-  const title = "Cars";
+  const title = "Cars | Integrating With HubSpot I Practicum";
 
   try {
-    const r = await axios.get(
-      `${BASE_URL}?properties=name,model,manufacturer,year`,
-      {
-        headers: {
-          ...BASE_HEADER,
-        },
-      },
-    );
+    const r = await axios.get(`${BASE_URL}?properties=${PROPERTIES}`, {
+      headers: BASE_HEADER,
+    });
     const cars = r.data.results;
 
-    res.render("index", { title, cars, error: null });
+    res.render("homepage", { title, cars, error: null });
   } catch (e) {
     console.error(e);
-    res.render("index", { title, cars: [], error: "Unable to load cars" });
+    res.render("homepage", { title, cars: [], error: "Unable to load cars" });
   }
 });
 
 // * Code for Route 2 goes here
+app.get("/update-cobj", (_, res) => {
+  res.render("updates", {
+    title: "Update Custom Object Form | Integrating With HubSpot I Practicum",
+  });
+});
+
+// * Code for Route 3 goes here
+app.post("/update-cobj", async (req, res) => {
+  try {
+    await axios.post(BASE_URL, buildBody(req), { headers: BASE_HEADER });
+  } catch (e) {
+    console.error(e);
+  }
+
+  res.redirect("/");
+});
+
 const viewOrEdit = async (req, res, state) => {
   const id = req.params.id;
 
   try {
-    const r = await axios.get(
-      `${BASE_URL}/${id}?properties=name,model,manufacturer,year`,
-      {
-        headers: {
-          ...BASE_HEADER,
-        },
-      },
-    );
+    const r = await axios.get(`${BASE_URL}/${id}?properties=${PROPERTIES}`, {
+      headers: BASE_HEADER,
+    });
+    const car = r.data;
 
     res.render("view", {
       title: `My ${car.properties.name}`,
-      car: res.data,
+      car,
       state,
       error: null,
     });
   } catch (e) {
     console.error(e);
-    res.redirect(404, "/");
+    res.redirect("/");
   }
 };
 
@@ -93,26 +110,13 @@ app.get("/create", (_, res) => {
   });
 });
 
-// * Code for Route 3 goes here
 const createOrUpdate = async (req, res) => {
-  const body = {
-    properties: {
-      name: req.body.name,
-      model: req.body.model,
-      manufacturer: req.body.manufacturer,
-      year: req.body.year,
-    },
-  };
   const method = req.route.path === "/create" ? "post" : "patch";
   const url =
     method === "post" ? `${BASE_URL}` : `${BASE_URL}/${req.params.id}`;
 
   try {
-    await axios[method](url, body, {
-      headers: {
-        ...BASE_HEADER,
-      },
-    });
+    await axios[method](url, buildBody(req), { headers: BASE_HEADER });
   } catch (e) {
     console.error(e);
   }

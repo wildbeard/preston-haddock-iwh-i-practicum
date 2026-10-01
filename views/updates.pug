@@ -1,0 +1,21 @@
+extends layout.pug
+
+block content
+  h1= title
+  a(href="/") Return to the homepage
+
+  form(method="post" action="/update-cobj")
+    .form-field
+      label(for="name") Name
+      input#name(type="text" name="name" required)
+    .form-field
+      label(for="model") Model
+      input#model(type="text" name="model" required placeholder="ex: Tacoma TRD Off-Road")
+    .form-field
+      label(for="manufacturer") Manufacturer
+      input#manufacturer(type="text" name="manufacturer" required)
+    .form-field
+      label(for="year") Year
+      input#year(type="number" name="year" required)
+    .form-field
+      button(type="submit" style="padding: 0.25rem 0.5rem;") Create
