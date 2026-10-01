@@ -1,0 +1,29 @@
+extends layout.pug
+
+block content
+  div.flex(style="align-items: center;")
+    h1(style="margin-right: 2rem;") Your Cars
+    a(href="/create") Add New Car
+
+  if error
+    p(style="color:red")=error
+  else
+    table.cars-table
+      thead
+        tr
+          th Make
+          th Name
+          th Model
+          th Year
+          th
+      tbody
+        each car in cars
+          tr
+            td=car.properties.manufacturer
+            td=car.properties.name
+            td=car.properties.model
+            td=car.properties.year
+            td
+              a(href=`/view/${car.id}`) View
+              = ' '
+              a(href=`/update/${car.id}`) Edit

@@ -1,13 +1,47 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
 
-body, * {
+body,
+* {
     font-family: 'Roboto', sans-serif;
     margin: 0;
     padding: 0;
 }
 
 h1 {
-    margin: 1rem;
+    margin: 1rem 0;
+}
+
+.main {
+    width: 100%;
+    margin: 0 0.8rem;
+}
+
+@media screen and (min-width: 1024px) {
+    .main {
+        width: 980px;
+    }
+}
+
+@media screen and (min-width: 1440px) {
+    .main {
+        width: 1280px;
+        margin: 0 auto;
+    }
+}
+
+.cars-table {
+    border: 0;
+    border-collapse: collapse;
+}
+
+.cars-table thead th,
+.cars-table td {
+    padding: 0.25rem 0.5rem;
+}
+
+.cars-table tr:nth-child(odd) {
+    background-color: #f2f2f2;
+}
 }
 
 .cards {

@@ -1,20 +1,50 @@
-const express = require('express');
-const axios = require('axios');
+require("dotenv").config();
+const express = require("express");
+const axios = require("axios");
+const e = require("express");
 const app = express();
 
-app.set('view engine', 'pug');
-app.use(express.static(__dirname + '/public'));
+app.set("view engine", "pug");
+app.use(express.static(__dirname + "/public"));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 // * Please DO NOT INCLUDE the private app access token in your repo. Don't do this practicum in your normal account.
-const PRIVATE_APP_ACCESS = '';
+const PRIVATE_APP_ACCESS = process.env.PRIVATE_APP_ACCESS;
+const CUSTOM_OBJ_ID = process.env.CUSTOM_OBJ_ID;
 
-// TODO: ROUTE 1 - Create a new app.get route for the homepage to call your custom object data. Pass this data along to the front-end and create a new pug template in the views folder.
+if (!PRIVATE_APP_ACCESS || !CUSTOM_OBJ_ID) {
+  console.error("PRIVATE_APP_ACCESS and CUSTOM_OBJ_ID must be set.");
+  process.exit(1);
+}
+
+const BASE_URL = `https://api.hubapi.com/crm/v3/objects/${CUSTOM_OBJ_ID}`;
+const BASE_HEADER = {
+  Authorization: `Bearer ${PRIVATE_APP_ACCESS}`,
+};
 
 // * Code for Route 1 goes here
+app.get("/", async (_, res) => {
+  const title = "Cars";
 
-// TODO: ROUTE 2 - Create a new app.get route for the form to create or update new custom object data. Send this data along in the next route.
+  try {
+    const r = await axios.get(
+      `${BASE_URL}?properties=name,model,manufacturer,year`,
+      {
+        headers: {
+          ...BASE_HEADER,
+          "Content-Type": "application/json",
+        },
+      },
+    );
+    const cars = r.data.results;
+
+    res.render("index", { title, cars, error: null });
+  } catch (e) {
+    console.error(e);
+    res.render("index", { title, cars: [], error: "Unable to load cars" });
+  }
+});
 
 // * Code for Route 2 goes here
 
