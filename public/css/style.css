@@ -42,6 +42,13 @@ h1 {
 .cars-table tr:nth-child(odd) {
     background-color: #f2f2f2;
 }
+
+.flex {
+    display: flex;
+}
+
+.form-field {
+    margin-bottom: 1rem;
 }
 
 .cards {
@@ -74,7 +81,8 @@ h1 {
     box-shadow: 3px 2px 6px lightgrey;
 }
 
-label, input {
+label,
+input {
     margin-top: 5px;
     display: block;
     font-size: inherit;

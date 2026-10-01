@@ -1,0 +1,19 @@
+- const editing = state === 'create' || state === 'edit'
+- const action = state === 'create' ? '/create' : `/update/${car.id}`
+
+form(method='post' action=action)
+  .form-field
+    label Name
+    input(type='text' required disabled=!editing value=car.properties.name name='name')
+  .form-field
+    label Model
+    input(type='text' required disabled=!editing value=car.properties.model name='model' placeholder='ex: Tacoma TRD Off-Road')
+  .form-field
+    label Make
+    input(type='text' required disabled=!editing value=car.properties.manufacturer name='manufacturer')
+  .form-field
+    label Year
+    input(type='number' required disabled=!editing value=car.properties.year name='year')
+
+  .form-field
+    button(submit style="padding: 0.25rem 0.5rem;")= state === 'create' ? 'Create' : 'Update'

@@ -47,8 +47,37 @@ app.get("/", async (_, res) => {
 });
 
 // * Code for Route 2 goes here
+const viewOrEdit = async (req, res, state) => {
+  const id = req.params.id;
 
-// TODO: ROUTE 3 - Create a new app.post route for the custom objects form to create or update your custom object data. Once executed, redirect the user to the homepage.
+  try {
+    const r = await axios.get(
+      `${BASE_URL}/${id}?properties=name,model,manufacturer,year`,
+      {
+        headers: {
+          ...BASE_HEADER,
+          "Content-Type": "application/json",
+        },
+      },
+    );
+    const car = r.data;
+    console.log(car);
+
+    res.render("view", {
+      title: `My ${car.properties.name}`,
+      car,
+      state,
+      error: null,
+    });
+  } catch (e) {
+    console.error(e);
+    res.redirect(404, "/");
+  }
+};
+
+app.get("/view/:id", (req, res) => viewOrEdit(req, res, "view"));
+
+app.get("/update/:id", (req, res) => viewOrEdit(req, res, "edit"));
 
 // * Code for Route 3 goes here
 

@@ -1,0 +1,12 @@
+extends layout.pug
+
+block content
+  div.flex(style="align-items: center;")
+    h1(style="margin-right: 2rem;")= state !== 'create' ? `Your ${car.properties.name}` : 'Create Car'
+    span
+      if state === 'view' || state === 'edit'
+        a(href=state === 'edit' ? `/view/${car.id}` : `/update/${car.id}`)= state === 'edit' ? 'View' : 'Edit'
+        = ' | '
+      a(href='/') Car List
+  
+  include car-form.pug
